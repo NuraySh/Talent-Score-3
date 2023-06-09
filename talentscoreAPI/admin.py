@@ -2,7 +2,7 @@ from django.contrib import admin
 from talentscoreAPI.models import *
 
 admin.site.register(Form)
-admin.site.register(SubStage)
+# admin.site.register(SubStage)
 admin.site.register(Answers)
 # admin.site.register(Questions)
 
@@ -32,9 +32,14 @@ class QuestionsAdmin(admin.ModelAdmin):
     list_display = ["id", "substage", "question", "question_type"]
     inlines = [AnswerOptionInline]
 
+class QuestionInline(admin.TabularInline):
+    model = Questions
+    extra = 2
+class SubStageAdmin(admin.ModelAdmin):
+    inlines = [QuestionInline]
 
 admin.site.register(Questions, QuestionsAdmin)
-# admin.site.register(Answers, AnswersAdmin)
+admin.site.register(SubStage, SubStageAdmin)
 
 
 # class AnswerOptionInline(admin.TabularInline):

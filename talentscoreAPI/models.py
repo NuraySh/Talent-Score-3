@@ -25,7 +25,8 @@ class SubStage(models.Model):
 
 
 class Questions(models.Model):
-    question = models.CharField(max_length=155)
+    question_number = models.CharField(max_length=100, null=True, blank=True)
+    question = models.ForeignKey('self', on_delete=models.CASCADE, null=True)
     question_type = models.CharField(max_length=50, default="input")
     substage = models.ForeignKey(SubStage, on_delete=models.CASCADE)
 
