@@ -5,7 +5,7 @@ from talentscoreAPI.models import *
 class AnswerSerializer(serializers.ModelSerializer):
     class Meta:
         model = Answers
-        fields = ["answer_text", "question"]
+        fields = ["id", "answer_text", "previous_answer", "option_field",  "question"]
 
 
 class QuestionSerializer(serializers.ModelSerializer):
@@ -15,7 +15,7 @@ class QuestionSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Questions
-        fields = ["id", "question", "answers"]
+        fields = ["id", "question", "slug", "question_number", "option_field",  "answers"]
 
     def get_answers(self, question):
         answers = question.answers_set.all()

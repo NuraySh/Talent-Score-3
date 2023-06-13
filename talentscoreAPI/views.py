@@ -4,6 +4,7 @@ from rest_framework.views import APIView
 from rest_framework.response import Response
 from talentscoreAPI.models import *
 from talentscoreAPI.serializers import *
+from rest_framework import generics
 
 
 class FormView(APIView):
@@ -27,30 +28,67 @@ class SubStageView(APIView):
         return Response(serializer.data)
 
 
-class QuestionsView(APIView):
-    def get(self, request, question_id=None):
-        if question_id:
-            try:
-                question = Questions.objects.get(id=question_id)
-                serializer = QuestionSerializer(question)
-                return Response(serializer.data)
-            except Questions.DoesNotExist:
-                return Response(status=status.HTTP_404_NOT_FOUND)
+class QuestionsView(generics.ListAPIView):
+    queryset = Questions.objects.all()
+    serializer_class = QuestionSerializer
+    # filterset_fields = ['question_number', "answers__previous_answer"]
+
+        
+    def get(self, request, slug=None, id=None):
+        if slug:
+            # questions = Questions.objects.filter(slug=slug)
+            # if 
+            questions = Questions.objects.filter(slug=slug)
+            serializer = QuestionSerializer(questions, many=True)
+            return Response(serializer.data)
         else:
             questions = Questions.objects.all()
             serializer = QuestionSerializer(questions, many=True)
             return Response(serializer.data)
 
-    # def post(self, request):
-    #     serializer = QuestionSerializer(data=request.data)
-    #     if serializer.is_valid():
-    #         serializer.save()
-    #         return Response(serializer.data, status=status.HTTP_201_CREATED)
-    #     return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+   
+
+class QuestionDetailView(generics.RetrieveAPIView):
+    queryset = Questions.objects.all()
+    serializer_class = QuestionSerializer
+
+    
+    def get(self, request, slug=None, id=None):
+        if slug and id:
+            try:
+                question = Questions.objects.get(slug=slug, answers__id=id)
+                serializer = QuestionSerializer(question, context={'id': id})
+                return Response(serializer.data)
+            except Questions.DoesNotExist:
+                return Response(status=status.HTTP_404_NOT_FOUND)
+              
+            # if question = ''
+    # def get_queryset(self):
+    #     slug = self.kwargs.get('slug')
+    #     a_id = self.kwargs.get('id')
+    #     queryset = Questions.objects.filter(slug=slug, answer__id = a_id)
+    #     return queryset
+        
+    
 
 
-class AnswersView(APIView):
-    def get(self, request):
-        answers = Answers.objects.all()
-        serializer = AnswerSerializer(answers, many=True)
-        return Response(serializer.data)
+class AnswerDetailView(generics.RetrieveAPIView):
+    queryset = Answers.objects.all()
+    serializer_class = AnswerSerializer
+    lookup_field = 'id'
+
+    def get_queryset(self):
+        queryset = super().get_queryset()
+        slug = self.kwargs.get('slug')
+        queryset = queryset.filter(question__slug=slug)
+        return queryset
+    
+
+class AnswerListView(generics.ListAPIView):
+    serializer_class = AnswerSerializer
+
+    def get_queryset(self):
+        slug = self.kwargs.get('slug')
+        previous_answer = self.kwargs.get('previous_answer')
+        queryset = Answers.objects.filter(question__slug=slug, previous_answer=previous_answer)
+        return queryset
