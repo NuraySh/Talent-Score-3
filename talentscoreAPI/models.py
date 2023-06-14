@@ -26,10 +26,8 @@ class SubStage(models.Model):
 
 class Questions(models.Model):
     question = models.CharField(max_length=155)
-    question_number = models.CharField(max_length=155, default='1')
-    previous_question = models.ForeignKey('self', on_delete=models.SET_NULL, null=True, blank=True)
     question_type = models.CharField(max_length=50, default="input")
-    slug = models.SlugField(null=True, blank=True)  # Add the slug field
+    slug = models.SlugField(null=True, blank=True)
     substage = models.ForeignKey(SubStage, on_delete=models.CASCADE)
 
     def save(self, *args, **kwargs):
@@ -46,19 +44,22 @@ class Questions(models.Model):
 
 class Answers(models.Model):
     question = models.ForeignKey(Questions, on_delete=models.CASCADE)
-    option_field = models.ManyToManyField(Questions, related_name='option_field')
-    answer_text = models.CharField(max_length=255, null=True, blank=True)
+    slug = models.SlugField(null=True, blank=True)
+    answer = models.CharField(max_length=255, null=True, blank=True)
     previous_answer = models.ForeignKey('self', on_delete=models.SET_NULL, null=True, blank=True)
 
-
+    def save(self, *args, **kwargs):
+        self.slug = slugify(self.question)
+        super().save(*args, **kwargs)
+    
     class Meta:
         verbose_name = "Answer"
         verbose_name_plural = "Answers"
 
     def __str__(self):
-        if  self.answer_text == None:
+        if  self.answer == None:
             return 'input'
-        return self.answer_text
+        return self.answer
     
 
 

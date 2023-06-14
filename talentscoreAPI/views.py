@@ -28,16 +28,12 @@ class SubStageView(APIView):
         return Response(serializer.data)
 
 
-class QuestionsView(generics.ListAPIView):
+class QuestionListView(generics.ListAPIView):
     queryset = Questions.objects.all()
     serializer_class = QuestionSerializer
-    # filterset_fields = ['question_number', "answers__previous_answer"]
-
         
     def get(self, request, slug=None, id=None):
         if slug:
-            # questions = Questions.objects.filter(slug=slug)
-            # if 
             questions = Questions.objects.filter(slug=slug)
             serializer = QuestionSerializer(questions, many=True)
             return Response(serializer.data)
@@ -52,24 +48,11 @@ class QuestionDetailView(generics.RetrieveAPIView):
     queryset = Questions.objects.all()
     serializer_class = QuestionSerializer
 
-    
-    def get(self, request, slug=None, id=None):
-        if slug and id:
-            try:
-                question = Questions.objects.get(slug=slug, answers__id=id)
-                serializer = QuestionSerializer(question, context={'id': id})
-                return Response(serializer.data)
-            except Questions.DoesNotExist:
-                return Response(status=status.HTTP_404_NOT_FOUND)
-              
-            # if question = ''
-    # def get_queryset(self):
-    #     slug = self.kwargs.get('slug')
-    #     a_id = self.kwargs.get('id')
-    #     queryset = Questions.objects.filter(slug=slug, answer__id = a_id)
-    #     return queryset
-        
-    
+    def get(self, request, **kwargs):
+        answer_slug = kwargs['slug']
+        questions = Questions.objects.filter(answers__slug=answer_slug)
+        serializer = QuestionSerializer(questions, many=True)
+        return Response(serializer.data)
 
 
 class AnswerDetailView(generics.RetrieveAPIView):
@@ -85,10 +68,23 @@ class AnswerDetailView(generics.RetrieveAPIView):
     
 
 class AnswerListView(generics.ListAPIView):
+    queryset = Answers.objects.all()
     serializer_class = AnswerSerializer
 
-    def get_queryset(self):
-        slug = self.kwargs.get('slug')
-        previous_answer = self.kwargs.get('previous_answer')
-        queryset = Answers.objects.filter(question__slug=slug, previous_answer=previous_answer)
-        return queryset
+    # def get_queryset(self):
+    #     slug = self.kwargs.get('slug')
+    #     previous_answer = self.kwargs.get('previous_answer')
+    #     queryset = Answers.objects.filter(question__slug=slug, previous_answer=previous_answer)
+    #     return queryset
+    
+    def get(self, request, **kwargs):
+        if kwargs:
+            answer_slug = kwargs['slug']
+            answer_id = kwargs['id']
+            answers = Answers.objects.filter(slug=answer_slug, id=answer_id)
+            serializer = AnswerSerializer(answers, many=True)
+            return Response(serializer.data)
+        else:
+            questions = Answers.objects.all()
+            serializer = AnswerSerializer(questions, many=True)
+            return Response(serializer.data)

@@ -8,7 +8,7 @@ class AnswerOptionInline(admin.TabularInline):
     extra = 2
 
 class QuestionsAdmin(admin.ModelAdmin):
-    list_display = ["id", "substage", "question", "question_number", "question_type"]
+    list_display = ["id", "substage", "question", "question_type"]
     inlines = [AnswerOptionInline]
 
 # class QuestionInline(admin.TabularInline):
@@ -20,7 +20,7 @@ class QuestionsAdmin(admin.ModelAdmin):
 
 
 class AnswersAdmin(admin.ModelAdmin):
-    list_display = ["id", 'question', 'previous_answer', 'answer_text' ]
+    list_display = ["id", 'question', 'previous_answer', 'answer' ]
 
 admin.site.register(Questions, QuestionsAdmin)
 admin.site.register(SubStage)
