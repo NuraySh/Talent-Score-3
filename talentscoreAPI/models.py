@@ -29,7 +29,8 @@ class Questions(models.Model):
     question_type = models.CharField(max_length=50, default="input")
     slug = models.SlugField(null=True, blank=True)
     substage = models.ForeignKey(SubStage, on_delete=models.CASCADE)
-
+    question_depends_answer = models.ManyToManyField('talentscoreAPI.Answers')
+    
     def save(self, *args, **kwargs):
         self.slug = slugify(self.substage)
         super().save(*args, **kwargs)
@@ -60,17 +61,7 @@ class Answers(models.Model):
         if  self.answer == None:
             return 'input'
         return self.answer
-    
-
-
-
-
-# substagede question ve ona uygun cavablar
-# question-list/{id} == cavab getirir
-# admin panel configuration question choices
-# question type (input, button, select)
-
-#questions-list/{slug}/{id}
+  
 
 
 

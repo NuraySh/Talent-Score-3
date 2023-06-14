@@ -13,6 +13,5 @@ urlpatterns = [
 ]
 
 
-#general question list
-#question list by substage
-
+#next stage
+#previous answer

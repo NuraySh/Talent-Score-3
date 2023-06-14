@@ -88,3 +88,8 @@ class AnswerListView(generics.ListAPIView):
             questions = Answers.objects.all()
             serializer = AnswerSerializer(questions, many=True)
             return Response(serializer.data)
+        
+
+# class QuestionFlowView(generics.ListAPIView):
+#     queryset = QuestionFlow.objects.all()
+#     serializer_class = QuestionFlowSerializer

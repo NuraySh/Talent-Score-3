@@ -2,6 +2,7 @@ from django.contrib import admin
 from talentscoreAPI.models import *
 
 admin.site.register(Form)
+# admin.site.register(QuestionFlow)
 
 class AnswerOptionInline(admin.TabularInline):
     model = Answers
