@@ -41,6 +41,8 @@ class QuestionListView(generics.ListAPIView):
             questions = Questions.objects.all()
             serializer = QuestionSerializer(questions, many=True)
             return Response(serializer.data)
+        
+    
 
    
 
@@ -70,12 +72,6 @@ class AnswerDetailView(generics.RetrieveAPIView):
 class AnswerListView(generics.ListAPIView):
     queryset = Answers.objects.all()
     serializer_class = AnswerSerializer
-
-    # def get_queryset(self):
-    #     slug = self.kwargs.get('slug')
-    #     previous_answer = self.kwargs.get('previous_answer')
-    #     queryset = Answers.objects.filter(question__slug=slug, previous_answer=previous_answer)
-    #     return queryset
     
     def get(self, request, **kwargs):
         if kwargs:
@@ -90,6 +86,12 @@ class AnswerListView(generics.ListAPIView):
             return Response(serializer.data)
         
 
-# class QuestionFlowView(generics.ListAPIView):
-#     queryset = QuestionFlow.objects.all()
-#     serializer_class = QuestionFlowSerializer
+
+class AnswerCreateView(APIView):
+    def post(self, request):
+        answer_serializer = AnswerSerializer(data=request.data)
+        if answer_serializer.is_valid():
+            answer_serializer.save()
+            return Response(answer_serializer.data, status=201)
+        else:
+            return Response(answer_serializer.errors, status=400)

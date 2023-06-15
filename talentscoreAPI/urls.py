@@ -10,6 +10,7 @@ urlpatterns = [
     path('answer-list/<slug:slug>/<int:id>/', AnswerListView.as_view(), name='answer-list'),
     path('question-list/<slug:slug>/options/<int:previous_answer>/', AnswerListView.as_view(), name='answer-list'),
     path('question-list/<slug:slug>/<int:id>/', AnswerDetailView.as_view(), name='answer-detail'),
+    path('answers/', AnswerCreateView.as_view(), name='answer-create')
 ]
 
 
