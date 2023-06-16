@@ -29,7 +29,7 @@ class Questions(models.Model):
     question_type = models.CharField(max_length=50, default="input")
     slug = models.SlugField(null=True, blank=True)
     substage = models.ForeignKey(SubStage, on_delete=models.CASCADE)
-    question_depends_answer = models.ManyToManyField('talentscoreAPI.Answers')
+    question_depends_answer = models.ManyToManyField('talentscoreAPI.Answers', null=True, blank=True)
     
     def save(self, *args, **kwargs):
         self.slug = slugify(self.substage)

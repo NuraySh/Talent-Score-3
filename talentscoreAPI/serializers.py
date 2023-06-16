@@ -13,7 +13,7 @@ class QuestionSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Questions
-        fields = ["id", "question", "slug",  "answers", "question_depends_answer"]
+        fields = ["substage", "id", "question", "slug",  "answers", "question_depends_answer"]
 
     def get_answers(self, question):
         answers = question.answers_set.all()
