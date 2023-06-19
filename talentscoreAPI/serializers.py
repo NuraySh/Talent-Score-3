@@ -1,11 +1,12 @@
 from rest_framework import serializers
-from talentscoreAPI.models import *
+
+from talentscoreAPI.models import Answers, Form, Questions, SubStage
 
 
 class AnswerSerializer(serializers.ModelSerializer):
     class Meta:
         model = Answers
-        fields = ["id",  "question", "answer", "previous_answer", "slug"]
+        fields = ["id", "question", "answer", "previous_answer"]
 
 
 class QuestionSerializer(serializers.ModelSerializer):
@@ -13,7 +14,7 @@ class QuestionSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Questions
-        fields = ["substage", "id", "question", "slug",  "answers", "question_depends_answer"]
+        fields = ["id", "question", "slug", "answers", "question_depends_answer"]
 
     def get_answers(self, question):
         answers = question.answers_set.all()

@@ -1,6 +1,7 @@
 from django.db import models
 from django.utils.text import slugify
 
+
 class Form(models.Model):
     stage = models.CharField(max_length=155)
 
@@ -29,8 +30,10 @@ class Questions(models.Model):
     question_type = models.CharField(max_length=50, default="input")
     slug = models.SlugField(null=True, blank=True)
     substage = models.ForeignKey(SubStage, on_delete=models.CASCADE)
-    question_depends_answer = models.ManyToManyField('talentscoreAPI.Answers', null=True, blank=True)
-    
+    question_depends_answer = models.ManyToManyField(
+        "talentscoreAPI.Answers", null=True, blank=True
+    )
+
     def save(self, *args, **kwargs):
         self.slug = slugify(self.substage)
         super().save(*args, **kwargs)
@@ -41,27 +44,25 @@ class Questions(models.Model):
 
     def __str__(self):
         return self.question
-    
+
 
 class Answers(models.Model):
     question = models.ForeignKey(Questions, on_delete=models.CASCADE)
     slug = models.SlugField(null=True, blank=True)
     answer = models.CharField(max_length=255, null=True, blank=True)
-    previous_answer = models.ForeignKey('self', on_delete=models.SET_NULL, null=True, blank=True)
+    previous_answer = models.ForeignKey(
+        "self", on_delete=models.SET_NULL, null=True, blank=True
+    )
 
     def save(self, *args, **kwargs):
         self.slug = slugify(self.question)
         super().save(*args, **kwargs)
-    
+
     class Meta:
         verbose_name = "Answer"
         verbose_name_plural = "Answers"
 
     def __str__(self):
-        if  self.answer == None:
-            return 'input'
+        if self.answer == None:
+            return "input"
         return self.answer
-  
-
-
-
