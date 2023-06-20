@@ -9,27 +9,32 @@ class Form(models.Model):
         verbose_name = "Stage"
         verbose_name_plural = "Stages"
 
-    def __str__(self):
-        return self.stage
+    # def __str__(self):
+    #     return self.stage
 
+    def __unicode__(self):
+        return f'{self.stage}'
+    
 
 class SubStage(models.Model):
     substage = models.CharField(max_length=155)
-    stage = models.ForeignKey(Form, on_delete=models.CASCADE)
+    stage = models.ForeignKey(Form, on_delete=models.CASCADE, related_name='substage')
 
     class Meta:
         verbose_name = "Sub Stage"
         verbose_name_plural = "Sub Stages"
 
-    def __str__(self):
-        return self.substage
+    # def __str__(self):
+        # return self.substage
+    def __unicode__(self):
+        return f'{self.stage}: {self.substage}'
 
 
 class Questions(models.Model):
     question = models.CharField(max_length=155)
     question_type = models.CharField(max_length=50, default="input")
     slug = models.SlugField(null=True, blank=True)
-    substage = models.ForeignKey(SubStage, on_delete=models.CASCADE)
+    substage = models.ForeignKey(SubStage, on_delete=models.CASCADE, related_name='questions')
     question_depends_answer = models.ManyToManyField(
         "talentscoreAPI.Answers", null=True, blank=True
     )
@@ -42,12 +47,15 @@ class Questions(models.Model):
         verbose_name = "Question"
         verbose_name_plural = "Questions"
 
-    def __str__(self):
-        return self.question
+    # def __str__(self):
+    #     return self.question
+    
+    def __unicode__(self):
+        return f'{self.question}: {self.slug}: {self.question_depends_answer}'
 
 
 class Answers(models.Model):
-    question = models.ForeignKey(Questions, on_delete=models.CASCADE)
+    question = models.ForeignKey(Questions, on_delete=models.CASCADE, related_name='answers')
     slug = models.SlugField(null=True, blank=True)
     answer = models.CharField(max_length=255, null=True, blank=True)
     previous_answer = models.ForeignKey(
@@ -66,3 +74,6 @@ class Answers(models.Model):
         if self.answer == None:
             return "input"
         return self.answer
+    
+    def __unicode__(self):
+        return f'{self.answer}'
