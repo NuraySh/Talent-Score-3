@@ -9,11 +9,9 @@ class Form(models.Model):
         verbose_name = "Stage"
         verbose_name_plural = "Stages"
 
-    # def __str__(self):
-    #     return self.stage
+    def __str__(self):
+        return self.stage
 
-    def __unicode__(self):
-        return f'{self.stage}'
     
 
 class SubStage(models.Model):
@@ -24,10 +22,9 @@ class SubStage(models.Model):
         verbose_name = "Sub Stage"
         verbose_name_plural = "Sub Stages"
 
-    # def __str__(self):
-        # return self.substage
-    def __unicode__(self):
-        return f'{self.stage}: {self.substage}'
+    def __str__(self):
+        return self.substage
+   
 
 
 class Questions(models.Model):
@@ -47,12 +44,10 @@ class Questions(models.Model):
         verbose_name = "Question"
         verbose_name_plural = "Questions"
 
-    # def __str__(self):
-    #     return self.question
+    def __str__(self):
+        return self.question
     
-    def __unicode__(self):
-        return f'{self.question}: {self.slug}: {self.question_depends_answer}'
-
+   
 
 class Answers(models.Model):
     question = models.ForeignKey(Questions, on_delete=models.CASCADE, related_name='answers')
@@ -74,6 +69,4 @@ class Answers(models.Model):
         if self.answer == None:
             return "input"
         return self.answer
-    
-    def __unicode__(self):
-        return f'{self.answer}'
+   

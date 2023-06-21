@@ -4,6 +4,7 @@ from talentscoreAPI.models import Answers, Form, Questions, SubStage
 
 
 class AnswerSerializer(serializers.ModelSerializer):
+    
     class Meta:
         model = Answers
         fields = ["id", "question", "answer", "previous_answer"]
