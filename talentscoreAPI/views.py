@@ -3,6 +3,7 @@ from rest_framework import generics, status
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from django.shortcuts import get_object_or_404
+from django.db.models import Prefetch
 
 from talentscoreAPI.models import Answers, Questions, SubStage
 from talentscoreAPI.serializers import (AnswerSerializer, QuestionSerializer,
@@ -11,31 +12,35 @@ from talentscoreAPI.serializers import (AnswerSerializer, QuestionSerializer,
 
 class SubStageView(APIView):
     def get(self, request):
-        substages = SubStage.objects.all()
-        serializer = SubStageSerializer(substages, many=True)
+        substage = SubStage.objects.all()
+        serializer = SubStageSerializer(substage, many=True)
         return Response(serializer.data)
 
 
 class QuestionListView(generics.ListAPIView):
-    queryset = Questions.objects.all()
     serializer_class = QuestionSerializer
 
-    def get(self, request, slug=None, id=None):
-        
+    def get_queryset(self):
+        queryset = Questions.objects.select_related('substage').prefetch_related('question_depends_answer').prefetch_related(
+        Prefetch('answers', queryset=Answers.objects.all())
+    ).all()
+
+        slug = self.kwargs.get("slug")
+        id = self.kwargs.get("id")
+
         if slug and id:
-            questions = Questions.objects.filter(slug=slug, question_depends_answer__id=id)
+            questions = queryset.filter(slug=slug, question_depends_answer__id=id)
             if not questions.exists():
-                next_stage_questions = Questions.objects.filter(substage__substage='Olympiad Questions')
-                serializer = QuestionSerializer(next_stage_questions, many=True)
-                return Response(serializer.data)
-            serializer = QuestionSerializer(questions, many=True)
-            return Response(serializer.data)
-           
+                next_stage_questions = queryset.filter(substage__substage='Olympiad Questions')
+                return next_stage_questions
+            return questions
         elif slug:
-            # Filter questions based on the provided slug
-            questions = Questions.objects.filter(slug=slug)
-            serializer = QuestionSerializer(questions, many=True)
-            return Response(serializer.data)
+            questions = queryset.filter(slug=slug)
+            return questions
+        else:
+            return queryset
+
+    
 
 
 class AnswerDetailView(generics.ListAPIView):
@@ -47,4 +52,5 @@ class AnswerDetailView(generics.ListAPIView):
         queryset = Answers.objects.filter(
             question__slug=slug, previous_answer=previous_answer
         )
+       
         return queryset

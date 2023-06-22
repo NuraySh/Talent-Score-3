@@ -12,7 +12,6 @@ class Form(models.Model):
     def __str__(self):
         return self.stage
 
-    
 
 class SubStage(models.Model):
     substage = models.CharField(max_length=155)
